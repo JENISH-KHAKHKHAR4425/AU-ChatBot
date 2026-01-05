@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Signup | Atmiya University Chatbot</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.signup-box {
+    width: 320px;
+    background: rgba(255,255,255,0.95);
+    padding: 25px 20px;
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+.signup-header img {
+    width: 70px;
+    margin-bottom: 6px;
+}
+
+.signup-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e3c72;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 8px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.signup-btn {
+    background: #1e3c72;
+    color: white;
+}
+
+.google-btn {
+    background: #fff;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.google-btn img {
+    width: 20px;
+    margin-right: 8px;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.divider span {
+    flex: 1;
+    height: 1px;
+    background: #ccc;
+}
+
+.divider small {
+    margin: 0 8px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="signup-box">
+
+    <div class="signup-header">
+        <img src="{{ url_for('static', filename='images/Atmiya_University.jpg') }}">
+        <h1>Atmiya University</h1>
+    </div>
+
+    <!-- Signup Form -->
+    <form onsubmit="signupWithEmail(event)">
+        <input type="text" id="name" placeholder="Enter Your Name" required>
+        <input type="email" id="email" placeholder="Enter Your Email" required>
+        <input type="password" id="password" placeholder="Create Password" required>
+        <button type="submit" class="signup-btn">Sign Up</button>
+    </form>
+
+    <div class="divider">
+        <span></span><small>OR</small><span></span>
+    </div>
+
+    <button class="google-btn" onclick="googleSignup()">
+        <img src="{{ url_for('static', filename='images/google.png') }}">
+        Sign up with Google
+    </button>
+
+    <a href="/login">Already have an account? Login</a>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, createUserWithEmailAndPassword, signInWithPopup } 
+from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC6UUXB0OG6zxvGePmXltPjE-c8Hg-t8T8",
+  authDomain: "atmiya-university---chatbot.firebaseapp.com",
+  projectId: "atmiya-university---chatbot",
+  storageBucket: "atmiya-university---chatbot.firebasestorage.app",
+  messagingSenderId: "953500059940",
+  appId: "1:953500059940:web:4df148b9f980f22d298bb1"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.signupWithEmail = async function (event) {
+    event.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    if (name.length < 3) {
+        alert("Please enter a valid name");
+        return;
+    }
+
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const token = await user.getIdToken();
+
+        alert(`Welcome ${name} ✅ Signup Successful`);
+
+        await fetch("/firebase-login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idToken: token })
+        });
+
+        window.location.href = "/index";
+    } catch (error) {
+        alert(error.message);
+    }
+};
+
+window.googleSignup = async function () {
+    const provider = new GoogleAuthProvider();
+
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+        const token = await user.getIdToken();
+
+        alert(`Welcome ${user.displayName} ✅ Signup Successful`);
+
+        await fetch("/firebase-login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idToken: token })
+        });
+
+        window.location.href = "/index";
+    } catch (error) {
+        alert(error.message);
+    }
+};
+</script>
+
+</body>
+</html>
