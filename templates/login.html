@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login | Atmiya University Chatbot</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+* {
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* === Card === */
+.login-box {
+    width: 320px;
+    background: rgba(255,255,255,0.95);
+    padding: 25px 20px; /* smaller vertical padding */
+    border-radius: 12px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    text-align: center;
+}
+
+/* === Header === */
+.login-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.login-header img {
+    width: 70px;
+    margin-bottom: 8px;
+}
+
+.login-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e3c72;
+}
+
+/* === Inputs === */
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 6px 0; /* smaller margin to reduce height */
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+input:focus {
+    border-color: #1e3c72;
+    box-shadow: 0 0 5px rgba(30,60,114,0.3);
+    outline: none;
+}
+
+/* === Buttons === */
+button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.login-btn {
+    background: #1e3c72;
+    color: white;
+}
+
+.google-btn {
+    background: #ffffff;
+    color: #555;
+    border: 1px solid #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.google-btn img {
+    width: 20px;
+    margin-right: 8px;
+}
+
+/* === Divider === */
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 12px 0;
+}
+
+.divider span {
+    flex: 1;
+    height: 1px;
+    background: #ccc;
+}
+
+.divider small {
+    margin: 0 8px;
+    color: #555;
+    font-size: 12px;
+}
+
+/* === Links === */
+a {
+    display: block;
+    margin-top: 12px;
+    font-size: 13px;
+    color: #1e3c72;
+    text-decoration: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <div class="login-header">
+        <img src="{{ url_for('static', filename='images/Atmiya_University.jpg') }}">
+        <h1>Atmiya University</h1>
+    </div>
+
+    <!-- Name Login -->
+    <form onsubmit="loginWithName(event)">
+        <input type="text" id="username" placeholder="Enter Your Name" required>
+        <input type="password" placeholder="Password" required>
+        <button class="login-btn">Login</button>
+    </form>
+
+    <div class="divider">
+        <span></span><small>OR</small><span></span>
+    </div>
+
+    <!-- Google Login -->
+    <button class="google-btn" onclick="googleLogin()">
+        <img src="{{ url_for('static', filename='images/google.png') }}">
+        Continue with Google
+    </button>
+
+    <a href="/signup">Create a new account</a>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyC6UUXB0OG6zxvGePmXltPjE-c8Hg-t8T8",
+  authDomain: "atmiya-university---chatbot.firebaseapp.com",
+  projectId: "atmiya-university---chatbot",
+  storageBucket: "atmiya-university---chatbot.firebasestorage.app",
+  messagingSenderId: "953500059940",
+  appId: "1:953500059940:web:4df148b9f980f22d298bb1"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// 🔹 Google Login
+window.googleLogin = function () {
+    const provider = new GoogleAuthProvider();
+
+    signInWithPopup(auth, provider).then(async (result) => {
+        const user = result.user;
+        const token = await user.getIdToken();
+
+        alert(`Welcome ${user.displayName} ✅ Login Successful`);
+
+        // 🔥 SEND TOKEN TO FLASK
+        fetch("/firebase-login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ idToken: token })
+        }).then(() => {
+            window.location.href = "index.html";
+        });
+    }).catch(err => alert(err.message));
+};
+</script>
+
+</body>
+</html>
