@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Atmiya University | Smart Chatbot</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+    <img src="{{ url_for('static', filename='images/Atmiya_University.jpg') }}" alt="Atmiya University Logo" class="logo">
+    <h1>Atmiya University</h1>
+    <p>Smart Chatbot for College Enquiry System</p>
+</header>
+
+<!-- Main Container -->
+<div class="main-container">
+
+    <!-- Left Info Card -->
+    <div class="card info-card">
+        <h2>👋 Welcome to Atmiya University Chatbot</h2>
+        <p>
+            Your intelligent virtual assistant that instantly answers
+            questions related to admissions, courses, fees, hostel facilities,
+            contact details, and campus life.
+        </p>
+
+        <ul>
+            <li>🚀 Admission Information</li>
+            <li>📚 Courses Offered</li>
+            <li>💰 Fee Structure</li>
+            <li>🏠 Hostel & Campus Facilities</li>
+            <li>☎️ Contact Details</li>
+        </ul>
+    </div>
+
+    <!-- Right Chat Card -->
+    <div class="card chat-card">
+
+        <div class="chat-header">
+            🤖 Atmiya University Chatbot
+        </div>
+
+        <div class="chat-body" id="chat-area">
+            <div class="bot-msg">
+                Hello 👋<br>
+                I am the Smart Chatbot of Atmiya University.<br>
+                How may I help you today?
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Ask me anything...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    © 2025 Atmiya University | Smart Chatbot Enquiry System
+</footer>
+
+<script>
+function sendMessage() {
+    let input = document.getElementById("user-input");
+    let message = input.value.trim();
+    if (!message) return;
+
+    let chatArea = document.getElementById("chat-area");
+
+    chatArea.innerHTML += `<div class="user-msg">${message}</div>`;
+
+    fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "message=" + encodeURIComponent(message)
+    })
+    .then(res => res.json())
+    .then(data => {
+        chatArea.innerHTML += `<div class="bot-msg">${data.response}</div>`;
+        chatArea.scrollTop = chatArea.scrollHeight;
+    });
+
+    input.value = "";
+}
+</script>
+
+</body>
+</html>
