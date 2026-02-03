@@ -1,13 +1,16 @@
-from flask import Flask, render_template, request, redirect, session, jsonify
+from flask import Flask, render_template, request, redirect, session, jsonify, url_for
 import firebase_admin
 from firebase_admin import credentials, auth as firebase_auth
 from chatbot import get_response
 
+# ---------------- APP CONFIG ----------------
 app = Flask(__name__)
 app.secret_key = "change-this-secret-key-before-deploy"
 
-# Firebase Admin
-cred = credentials.Certificate("atmiya-university---chatbot-firebase-adminsdk-fbsvc-664d935bd8.json")
+# ---------------- FIREBASE INIT ----------------
+cred = credentials.Certificate(
+    "atmiya-university---chatbot-firebase-adminsdk-fbsvc-664d935bd8.json"
+)
 firebase_admin.initialize_app(cred)
 
 # ---------------- HOME ----------------
@@ -31,6 +34,12 @@ def signup():
         return redirect("/index")
     return render_template("signup.html")
 
+# ---------------- LOGOUT ----------------
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
 # ---------------- FIREBASE TOKEN VERIFY ----------------
 @app.route("/firebase-login", methods=["POST"])
 def firebase_login():
@@ -46,6 +55,7 @@ def firebase_login():
         session["uid"] = decoded_token["uid"]
         session["email"] = decoded_token.get("email", "")
         session["name"] = decoded_token.get("name", "User")
+        session["photo"] = decoded_token.get("picture", "")
 
         return jsonify({"status": "success", "name": session["name"]})
 
@@ -69,11 +79,6 @@ def chat():
     msg = request.form.get("message", "")
     return jsonify({"response": get_response(msg)})
 
-# ---------------- LOGOUT ----------------
-@app.route("/logout")
-def logout():
-    session.clear()
-    return redirect("/login")
-
+# ---------------- RUN ----------------
 if __name__ == "__main__":
     app.run(debug=True)
