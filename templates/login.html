@@ -190,7 +190,7 @@ window.googleLogin = function () {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ idToken: token })
         }).then(() => {
-            window.location.href = "index.html";
+            window.location.href = "/index";
         });
     }).catch(err => alert(err.message));
 };
