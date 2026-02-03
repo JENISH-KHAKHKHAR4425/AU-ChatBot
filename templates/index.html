@@ -7,24 +7,101 @@
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-    <!-- CSS -->
+    <!-- Main CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <!-- Extra Navbar Styling -->
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 28px;
+            background: #111827;
+            color: #fff;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-left .logo {
+            width: 55px;
+            height: auto;
+        }
+
+        .header-left h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .header-left p {
+            margin: 0;
+            font-size: 13px;
+            color: #c7c7c7;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-right img {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #4f46e5;
+        }
+
+        .logout-btn {
+            padding: 8px 14px;
+            background: #ef4444;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: #dc2626;
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- Header -->
+<!-- HEADER -->
 <header class="header">
-    <img src="{{ url_for('static', filename='images/Atmiya_University.jpg') }}" alt="Atmiya University Logo" class="logo">
-    <h1>Atmiya University</h1>
-    <p>Smart Chatbot for College Enquiry System</p>
+
+    <div class="header-left">
+        <img src="{{ url_for('static', filename='images/Atmiya_University.jpg') }}"
+             alt="Atmiya University Logo"
+             class="logo">
+        <div>
+            <h1>Atmiya University</h1>
+            <p>Smart Chatbot for College Enquiry System</p>
+        </div>
+    </div>
+
+    <!-- RIGHT SIDE (User Image + Logout) -->
+    <div class="header-right">
+        <img src="{{ url_for('static', filename='images/User.PNG') }}" alt="User">
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+
 </header>
 
-<!-- Main Container -->
+<!-- MAIN CONTAINER -->
 <div class="main-container">
 
-    <!-- Left Info Card -->
+    <!-- LEFT INFO CARD -->
     <div class="card info-card">
-        <h2>👋 Welcome to Atmiya University Chatbot</h2>
+        <h2>👋 Welcome, {{ name }}</h2>
         <p>
             Your intelligent virtual assistant that instantly answers
             questions related to admissions, courses, fees, hostel facilities,
@@ -40,7 +117,7 @@
         </ul>
     </div>
 
-    <!-- Right Chat Card -->
+    <!-- RIGHT CHAT CARD -->
     <div class="card chat-card">
 
         <div class="chat-header">
@@ -64,11 +141,12 @@
 
 </div>
 
-<!-- Footer -->
+<!-- FOOTER -->
 <footer class="footer">
     © 2025 Atmiya University | Smart Chatbot Enquiry System
 </footer>
 
+<!-- CHAT SCRIPT -->
 <script>
 function sendMessage() {
     let input = document.getElementById("user-input");
